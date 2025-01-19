@@ -56,7 +56,7 @@ async def groq_answer_handler(message: types.Message) -> None:
 
     except Exception as e:
         logger.error(f"Groq API error: {e}")
-        await message.answer("Sorry, I couldn't process your question. Please try again later.")
+        await message.answer("Извините, я не смогла обработать ваш запрос. Пожалуйста, попробуйте снова позже.")
 
 
 @router.message(IsAdminFilter(ADMIN_IDS))
