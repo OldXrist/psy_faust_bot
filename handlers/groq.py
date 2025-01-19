@@ -6,7 +6,7 @@ from groq import Groq
 from dotenv import load_dotenv
 from os import getenv
 
-from filters import IsAdminFilter
+from filters.admin import IsAdminFilter
 
 router = Router()
 

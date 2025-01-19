@@ -5,7 +5,7 @@ from aiogram import Router, html
 from aiogram.filters import CommandStart
 from aiogram.types import Message
 
-from filters import IsAdminFilter
+from filters.admin import IsAdminFilter
 
 # Create a router for command handlers
 router = Router()
