@@ -1,8 +1,7 @@
 import logging
 import sys
 
-from aiogram import Router
-from aiogram.types import Message
+from aiogram import Router, types, F
 from groq import Groq
 from dotenv import load_dotenv
 from os import getenv
@@ -28,8 +27,8 @@ logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 logger = logging.getLogger(__name__)
 
 
-@router.message(IsAdminFilter(ADMIN_IDS))
-async def groq_answer_handler(message: Message) -> None:
+@router.message(F.text, IsAdminFilter(ADMIN_IDS))
+async def groq_answer_handler(message: types.Message) -> None:
     """
     Handler to send the user's question to OpenAI API and return the answer.
     """
@@ -56,7 +55,12 @@ async def groq_answer_handler(message: Message) -> None:
         await message.answer("Sorry, I couldn't process your question. Please try again later.")
 
 
+@router.message(IsAdminFilter(ADMIN_IDS))
+async def other_content_handler(message: types.Message) -> None:
+    await message.answer('К сожалению, я могу работать только с текстовым контентом.\n\nС чем еще я могу вам помочь?')
+
+
 @router.message()
-async def unauthorized_message_handler(message: Message) -> None:
+async def unauthorized_message_handler(message: types.Message) -> None:
     await message.answer('Ваш запрос не может быть обработан, поскольку вы не авторизованы.')
 
