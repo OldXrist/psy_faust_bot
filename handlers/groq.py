@@ -7,11 +7,14 @@ from groq import Groq
 from dotenv import load_dotenv
 from os import getenv
 
+from filters import IsAdminFilter
+
 router = Router()
 
 load_dotenv()
 CONTEXT = getenv("CONTEXT")
 GROQ_API_KEY = getenv("GROQ_API_KEY")
+ADMIN_IDS = list(map(int, getenv("ADMIN_IDS").split(',')))
 
 
 client = Groq(
@@ -25,7 +28,7 @@ logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 logger = logging.getLogger(__name__)
 
 
-@router.message()
+@router.message(IsAdminFilter(ADMIN_IDS))
 async def groq_answer_handler(message: Message) -> None:
     """
     Handler to send the user's question to OpenAI API and return the answer.
@@ -51,3 +54,9 @@ async def groq_answer_handler(message: Message) -> None:
     except Exception as e:
         logger.error(f"Groq API error: {e}")
         await message.answer("Sorry, I couldn't process your question. Please try again later.")
+
+
+@router.message()
+async def unauthorized_message_handler(message: Message) -> None:
+    await message.answer('Ваш запрос не может быть обработан, поскольку вы не авторизованы.')
+
