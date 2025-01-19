@@ -20,8 +20,12 @@ client = Groq(
     api_key=GROQ_API_KEY,
 )
 
+if not CONTEXT:
+    raise ValueError("CONTEXT is not set in the .env file")
 if not GROQ_API_KEY:
     raise ValueError("GROQ_API_KEY is not set in the .env file")
+if not ADMIN_IDS:
+    raise ValueError("ADMIN_IDS is not set in the .env file")
 
 logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 logger = logging.getLogger(__name__)
