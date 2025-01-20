@@ -1,8 +1,8 @@
 import logging
 import sys
+import groq
 
 from aiogram import Router, types, F
-from groq import Groq
 from dotenv import load_dotenv
 from os import getenv
 
@@ -16,7 +16,7 @@ GROQ_API_KEY = getenv("GROQ_API_KEY")
 ADMIN_IDS = list(map(int, getenv("ADMIN_IDS").split(',')))
 
 
-client = Groq(
+client = groq.Groq(
     api_key=GROQ_API_KEY,
 )
 
@@ -54,6 +54,10 @@ async def groq_answer_handler(message: types.Message) -> None:
         # Send the response back to the user
         await message.answer(answer)
 
+    except groq.RateLimitError:
+        logger.error(f"Rate limit error")
+        await message.answer("Вы достигли лимит запросов, попробуйте позже.")
+
     except Exception as e:
         logger.error(f"Groq API error: {e}")
         await message.answer("Извините, я не смогла обработать ваш запрос. Пожалуйста, попробуйте снова позже.")
@@ -67,4 +71,3 @@ async def other_content_handler(message: types.Message) -> None:
 @router.message()
 async def unauthorized_message_handler(message: types.Message) -> None:
     await message.answer('Ваш запрос не может быть обработан, поскольку вы не авторизованы.')
-
