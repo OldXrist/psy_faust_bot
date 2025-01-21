@@ -12,7 +12,7 @@ from aiogram.enums import ParseMode
 
 from handlers.groq import router as groq_router
 from handlers.commands import router as commands_router
-from handlers.voice import router as voice_router
+from handlers.voice_utils import router as voice_router
 
 # Load environment variables from .env file
 load_dotenv()

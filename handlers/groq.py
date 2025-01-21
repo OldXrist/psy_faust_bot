@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from os import getenv
 
 from filters.admin import IsAdminFilter
+from handlers.voice_utils import download_and_convert_voice, transcribe_audio_with_groq
 
 router = Router()
 
@@ -61,6 +62,28 @@ async def groq_answer_handler(message: types.Message) -> None:
     except Exception as e:
         logger.error(f"Groq API error: {e}")
         await message.answer("Извините, я не смогла обработать ваш запрос. Пожалуйста, попробуйте снова позже.")
+
+
+@router.message(F.voice, IsAdminFilter(ADMIN_IDS))
+async def handle_voice_message(message: types.Message):
+    """Handles voice messages, transcribes them, and sends the text to the user."""
+    user_id = message.from_user.id
+    voice: types.Voice = message.voice
+
+    try:
+        # Step 1: Download and convert the voice message to WAV
+        wav_file_path = await download_and_convert_voice(voice, user_id)
+
+        # Step 2: Transcribe the audio using OpenAI Whisper API
+        transcription = await transcribe_audio_with_groq(wav_file_path)
+
+        # Step 3: Reply with the transcription
+        await message.reply(f"Вот текст, который мне удалось распознать:\n\n{transcription}\n\n"
+                            f"Обратите внимание: модель может допускать ошибки в распознавании. "
+                            f"Пожалуйста, проверьте текст перед использованием. "
+                            f"Если что-то не так, вы всегда можете отправить сообщение повторно.")
+    except Exception as e:
+        await message.reply(f"Извините, что-то пошло не так при обработке вашего голосового сообщения.")
 
 
 @router.message(IsAdminFilter(ADMIN_IDS))
