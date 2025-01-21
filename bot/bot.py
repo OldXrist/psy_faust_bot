@@ -12,7 +12,6 @@ from aiogram.enums import ParseMode
 
 from handlers.groq import router as groq_router
 from handlers.commands import router as commands_router
-from handlers.voice_utils import router as voice_router
 
 # Load environment variables from .env file
 load_dotenv()
@@ -36,7 +35,7 @@ async def main() -> None:
     # Initialize Bot instance with an aiohttp session
     session = AiohttpSession()
     bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML), session=session)
-    dp.include_routers(commands_router, voice_router, groq_router)
+    dp.include_routers(commands_router, groq_router)
     # Start polling updates
     await dp.start_polling(bot)
 
