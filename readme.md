@@ -11,7 +11,7 @@ This Telegram bot is a personal psychological assistant designed to help users c
 - **Text Generation**: Create content on psychological topics.
 - **Text Editing**: Refine and enhance existing text, including grammar and tone corrections.
 - **Speech-to-Text**: Prompt Groq API via voice messages using speech recognition model.
-- **Rate Limit Awareness**: Notify users when OpenAI API limits are reached and provide updates when the limit resets.
+- **Rate Limit Awareness**: Notify users when Groq API limits are reached and provide updates when the limit resets.
 - **Access Control**: Restrict bot usage to authorized users based on their Telegram user IDs.
 
 ---
