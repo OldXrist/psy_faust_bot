@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from os import getenv
 
 from filters.admin import IsAdminFilter
+from handlers.voice_utils import download_and_convert_voice, transcribe_audio_with_groq
 
 router = Router()
 
@@ -34,16 +35,52 @@ logger = logging.getLogger(__name__)
 @router.message(F.text, IsAdminFilter(ADMIN_IDS))
 async def groq_answer_handler(message: types.Message) -> None:
     """
-    Handler to send the user's question to OpenAI API and return the answer.
+    Handler to send the user's question to Groq API and return the answer.
     """
-    try:
-        user_question = message.text
+    await groq_api_request(message.text, message)
 
-        # Call OpenAI API with updated method
+
+@router.message(F.voice, IsAdminFilter(ADMIN_IDS))
+async def handle_voice_message(message: types.Message):
+    """Handles voice messages, transcribes them, and sends the text to the user."""
+    user_id = message.from_user.id
+    voice: types.Voice = message.voice
+
+    try:
+        # Step 1: Download and convert the voice message to WAV
+        wav_file_path = await download_and_convert_voice(voice, user_id)
+
+        # Step 2: Transcribe the audio using Groq Whisper API
+        transcription = await transcribe_audio_with_groq(wav_file_path)
+
+        # Step 3: Reply with the transcription
+        await groq_api_request(transcription, message)
+        logger.info(f'Transcription: {transcription}')
+
+    except Exception as e:
+        logger.error(f'Speech recognition error: {e}')
+        await message.answer(f"Извините, что-то пошло не так при обработке вашего голосового сообщения.")
+
+
+@router.message(IsAdminFilter(ADMIN_IDS))
+async def other_content_handler(message: types.Message) -> None:
+    await message.answer('К сожалению, я могу работать только с текстовым и голосовым контеном.'
+                         '\n\nС чем еще я могу вам помочь?')
+
+
+@router.message()
+async def unauthorized_message_handler(message: types.Message) -> None:
+    await message.answer('Ваш запрос не может быть обработан, поскольку вы не авторизованы.')
+
+
+async def groq_api_request(prompt: str, message: types.Message) -> None:
+    logger.info(f'Prompt: {prompt}')
+    try:
+        # Call Groq API with updated method
         response = client.chat.completions.create(
             messages=[
                 {"role": "system", "content": CONTEXT},
-                {"role": "user", "content": user_question},
+                {"role": "user", "content": prompt},
             ],
             model="llama-3.3-70b-versatile"
         )
@@ -61,13 +98,3 @@ async def groq_answer_handler(message: types.Message) -> None:
     except Exception as e:
         logger.error(f"Groq API error: {e}")
         await message.answer("Извините, я не смогла обработать ваш запрос. Пожалуйста, попробуйте снова позже.")
-
-
-@router.message(IsAdminFilter(ADMIN_IDS))
-async def other_content_handler(message: types.Message) -> None:
-    await message.answer('К сожалению, я могу работать только с текстовым контентом.\n\nС чем еще я могу вам помочь?')
-
-
-@router.message()
-async def unauthorized_message_handler(message: types.Message) -> None:
-    await message.answer('Ваш запрос не может быть обработан, поскольку вы не авторизованы.')

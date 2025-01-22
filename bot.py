@@ -35,10 +35,9 @@ async def main() -> None:
     # Initialize Bot instance with an aiohttp session
     session = AiohttpSession()
     bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML), session=session)
-    dp.include_routers(commands_router, groq_router, )
+    dp.include_routers(commands_router, groq_router)
     # Start polling updates
     await dp.start_polling(bot)
-
 
 if __name__ == "__main__":
     try:
