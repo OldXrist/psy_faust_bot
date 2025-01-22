@@ -55,7 +55,7 @@ async def download_and_convert_voice(voice: types.Voice, user_id: int) -> str:
 
 
 async def transcribe_audio_with_groq(file_path: str) -> str:
-    """Send the audio file to OpenAI Whisper API for transcription."""
+    """Send the audio file to Groq Whisper API for transcription."""
     with open(file_path, "rb") as audio_file:
         # Create a transcription of the audio file
         transcription = client.audio.transcriptions.create(

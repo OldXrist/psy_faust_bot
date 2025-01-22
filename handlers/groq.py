@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 @router.message(F.text, IsAdminFilter(ADMIN_IDS))
 async def groq_answer_handler(message: types.Message) -> None:
     """
-    Handler to send the user's question to OpenAI API and return the answer.
+    Handler to send the user's question to Groq API and return the answer.
     """
     await groq_api_request(message.text, message)
 
@@ -50,7 +50,7 @@ async def handle_voice_message(message: types.Message):
         # Step 1: Download and convert the voice message to WAV
         wav_file_path = await download_and_convert_voice(voice, user_id)
 
-        # Step 2: Transcribe the audio using OpenAI Whisper API
+        # Step 2: Transcribe the audio using Groq Whisper API
         transcription = await transcribe_audio_with_groq(wav_file_path)
 
         # Step 3: Reply with the transcription

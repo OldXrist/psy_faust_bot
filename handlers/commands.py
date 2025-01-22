@@ -42,7 +42,7 @@ async def command_start_handler(message: Message) -> None:
 async def check_openai_rate_limit(message: Message):
     """Checks the remaining rate limit for Groq API."""
     try:
-        # Send a test request to OpenAI API
+        # Send a test request to Groq API
         async with httpx.AsyncClient() as client:
             response = await client.post(
                 "https://api.groq.com/openai/v1/chat/completions",
