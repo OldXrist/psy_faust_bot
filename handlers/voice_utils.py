@@ -61,7 +61,6 @@ async def transcribe_audio_with_groq(file_path: str) -> str:
         transcription = client.audio.transcriptions.create(
             file=(file_path, audio_file.read()),  # Required audio file
             model="whisper-large-v3-turbo",  # Required model to use for transcription
-            prompt=CONTEXT,  # Optional
             response_format="json",  # Optional
             language="ru",  # Optional
             temperature=0.0  # Optional
