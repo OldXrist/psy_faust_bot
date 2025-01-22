@@ -55,6 +55,7 @@ async def handle_voice_message(message: types.Message):
 
         # Step 3: Reply with the transcription
         await groq_api_request(transcription, message)
+        logger.info(f'Transcription: {transcription}')
 
     except Exception as e:
         logger.error(f'Speech recognition error: {e}')
@@ -73,6 +74,7 @@ async def unauthorized_message_handler(message: types.Message) -> None:
 
 
 async def groq_api_request(prompt: str, message: types.Message) -> None:
+    logger.info(f'Prompt: {prompt}')
     try:
         # Call Groq API with updated method
         response = client.chat.completions.create(
