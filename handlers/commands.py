@@ -70,4 +70,4 @@ async def check_openai_rate_limit(message: Message):
         reply_message = f"❌ Ошибка при отправке запроса."
 
     # Send the message to the user
-    await message.reply(reply_message, parse_mode="Markdown")
+    await message.answer(reply_message, parse_mode="Markdown")
