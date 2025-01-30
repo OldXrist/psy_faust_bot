@@ -38,7 +38,7 @@ async def command_start_handler(message: Message) -> None:
                          f"\n\nЕсли вы считаете, что это ошибка, свяжитесь с администратором.")
 
 
-@router.message(Command('rate_limit'))
+@router.message(Command('rate_limit'), IsAdminFilter(ADMIN_IDS))
 async def check_openai_rate_limit(message: Message):
     """Checks the remaining rate limit for Groq API."""
     try:
